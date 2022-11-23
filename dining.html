@@ -1,0 +1,65 @@
+<html>
+<html lang="en">
+
+<head>
+    <title>Dining Room</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.0.0/p5.js"></script>
+    <script src="https://unpkg.com/ml5@latest/dist/ml5.min.js"></script>
+</head>
+
+<body>
+    <center>
+        <h1 class="btn btn-info header">Dining Room</h1>
+        <h3 class="btn btn-warning" id="status"></h3>
+    </center>
+</body>
+
+<script>
+    objects = [];
+    status = false;
+
+    function preload() {
+        img = loadImage("dining room.jpeg");
+    }
+
+    function setup() {
+        canvas = createCanvas(450, 250);
+        canvas.center();
+        cocossd = ml5.objectDetector("cocossd", modelLoaded);
+        document.getElementById("status").innerHTML = "Status : Detecting";
+    }
+
+    function draw() {
+        image(img, 0, 0, 450, 250);
+
+        if (status == true) {
+            for (i = 0; i < objects.length; i++) {
+                fill("#FF0000");
+                stroke("#FF0000");
+                text(objects[i].label, objects[i].x + 10, objects[i].y + 10);
+                noFill();
+                rect(objects[i].x, objects[i].y, objects[i].width, objects[i].height);
+                document.getElementById("status").innerHTML = "Status : Detected";
+            }
+        }
+    }
+
+    function modelLoaded() {
+        console.log("Model Loaded");
+        status = true;
+        cocossd.detect(img, gotResult);
+    }
+
+    function gotResult(error, results) {
+        if (error) {
+            console.log(error);
+        }
+        console.log(results);
+        objects = results;
+    }
+</script>
+
+</html>
